@@ -7,11 +7,13 @@ import {
 import "./index.css";
 import App from "./App";
 import Home from "./pages/Home";
+import ErrorPage from "./pages/ErrorPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App></App>,
+    errorElement: <ErrorPage></ErrorPage>,
     children: [
       {
         path: "/",
@@ -21,6 +23,15 @@ const router = createBrowserRouter([
         path: "/about",
         element: <h1>About</h1>,
       },
+      {
+        path: "/contact",
+        element: <h1>Contact</h1>,
+      },
+      {
+        path: "/dashboard",
+        element: <h1>Dashboard</h1>,
+      },
+
     ],
   },
 ]);
