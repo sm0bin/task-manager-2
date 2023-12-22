@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { createContext, useEffect, useState } from 'react';
 import auth from "../firebase/firebase.config.js";
 import { GoogleAuthProvider, TwitterAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
+import useAxiosPublic from '../hooks/useAxiosPublic.jsx';
 
 const googleProvider = new GoogleAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
@@ -9,6 +10,7 @@ export const AuthContext = createContext(null);
 
 
 const AuthProvider = ({ children }) => {
+    const axiosPublic = useAxiosPublic();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -33,21 +35,39 @@ const AuthProvider = ({ children }) => {
         return signInWithPopup(auth, twitterProvider);
     }
 
-    // const updateUser = (name, photoURL) => {
-    //     setLoading(true);
-    //     return updateProfile(auth.currentUser, {
-    //         displayName: name,
-    //         photoURL: photoURL
-    //     });
-    // }
+    const updateUser = (name, photoURL) => {
+        setLoading(true);
+        return updateProfile(auth.currentUser, {
+            displayName: name,
+            photoURL: photoURL
+        });
+    }
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            // console.log(currentUser.displayName, currentUser.email, currentUser.photoURL);
+
             setUser(currentUser);
+            if (currentUser) {
+                const userInfo = {
+                    email: currentUser.email,
+                };
+                console.log(userInfo);
+                axiosPublic.post("/jwt", userInfo)
+                    .then(res => {
+                        // console.log(res.data.token);
+                        if (res.data.token) {
+                            localStorage.setItem('token', res.data.token);
+                            setLoading(false);
+                        }
+                    })
+            } else {
+                localStorage.removeItem('token');
+            }
             setLoading(false);
         });
         return () => unsubscribe();
-    }, []);
+    }, [axiosPublic])
 
     const authInfo = {
         user,
@@ -57,7 +77,7 @@ const AuthProvider = ({ children }) => {
         googleSignIn,
         twitterSignIn,
         loading,
-        // updateUser,
+        updateUser,
     };
 
     return (
@@ -65,10 +85,6 @@ const AuthProvider = ({ children }) => {
             {children}
         </AuthContext.Provider >
     );
-};
-
-AuthProvider.propTypes = {
-    children: PropTypes.node,
 };
 
 export default AuthProvider;

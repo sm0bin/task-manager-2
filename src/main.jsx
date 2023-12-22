@@ -13,6 +13,9 @@ import SignUp from "./auth/SignUp";
 import AuthProvider from "./providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Dashboard from "./pages/Dashboard";
+import PrivateRoute from "./routes/PrivateRoute";
+const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
@@ -34,7 +37,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        element: <h1>Dashboard</h1>,
+        element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
       },
       {
         path: '/login',
@@ -52,12 +55,12 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
-      {/* <QueryClientProvider client={QueryClient}> */}
-      {/* <HelmetProvider> */}
-      <Toaster />
-      <RouterProvider router={router} />
-      {/* </HelmetProvider> */}
-      {/* </QueryClientProvider> */}
+      <QueryClientProvider client={queryClient}>
+        {/* <HelmetProvider> */}
+        <Toaster />
+        <RouterProvider router={router} />
+        {/* </HelmetProvider> */}
+      </QueryClientProvider>
     </AuthProvider>
   </React.StrictMode>
 );
