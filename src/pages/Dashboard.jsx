@@ -40,6 +40,7 @@ const Dashboard = () => {
             ...data,
             email: user.email
         }
+        console.log(task);
 
         axiosSecure.post("/todos", task)
             .then(res => {
