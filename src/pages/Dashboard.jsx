@@ -3,16 +3,17 @@ import { useForm } from "react-hook-form";
 import useAuth from "../hooks/useAuth";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import { toast } from "react-hot-toast";
-import { useLoaderData } from "react-router-dom";
 import useLoadDataSecure from "../hooks/useLoadDataSecure";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import UpdateForm from "../components/dashboard/UpdateForm";
 
 const Dashboard = () => {
     const { user, loading } = useAuth();
     const axiosSecure = useAxiosSecure();
-    const [tasks, isPendingTasks, refetchTasks] = useLoadDataSecure(`/todos/${user.email}`, "tasks");
-    const [updateTask, setUpdateTask] = useState(null);
+    const [tasks, isPendingTasks, refetchTasks] = useLoadDataSecure(`/tasks/${user.email}`, "tasks");
+    const [updateTask, setUpdateTask] = useState({});
+    const states = ["To Do", "Ongoing", "Completed"];
 
     // if (isPendingTasks) {
     //     return <div className="fixed inset-0 w-full h-screen flex items-center justify-center">
@@ -21,7 +22,6 @@ const Dashboard = () => {
     // }
     // console.log(task);
 
-    const states = ["To Do", "Ongoing", "Completed"];
     // if (isPendingTasks) return <div>Loading...</div>
 
 
@@ -30,9 +30,9 @@ const Dashboard = () => {
         register,
         handleSubmit,
         watch,
+        reset,
         formState: { errors },
-    } = useForm()
-
+    } = useForm();
 
     const onSubmit = (data) => {
 
@@ -42,10 +42,11 @@ const Dashboard = () => {
         }
         console.log(task);
 
-        axiosSecure.post("/todos", task)
+        axiosSecure.post("/tasks", task)
             .then(res => {
                 console.log(res.data);
                 toast.success('Task Added!');
+                reset();
                 refetchTasks();
                 document.getElementById('addTaskModal').close();
             })
@@ -56,22 +57,7 @@ const Dashboard = () => {
 
     }
 
-    const handleUpdateSubmit = (data) => {
-        const task = {
-            ...data,
-            email: user.email
-        }
 
-        axiosSecure.put(`/todos/${updateTask._id}`, task)
-            .then(res => {
-                console.log(res.data);
-                toast.success('Task Updated!');
-                refetchTasks();
-                document.getElementById('updateTaskModal').close();
-            }).catch(err => {
-                console.log(err);
-            })
-    }
 
 
     const deleteTask = (_id) => {
@@ -85,7 +71,7 @@ const Dashboard = () => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosSecure.delete(`/todos/${_id}`)
+                axiosSecure.delete(`/tasks/${_id}`)
                     .then(res => {
                         console.log(res.data);
                         toast.success('Task Deleted!');
@@ -100,9 +86,12 @@ const Dashboard = () => {
     }
 
     const handleUpdateTask = (task) => {
-        // console.log(_id);
+        console.log(task);
         setUpdateTask(task);
-        document.getElementById('updateTaskModal').showModal();
+        console.log(updateTask);
+        if (updateTask) {
+            document.getElementById('updateTaskModal').showModal();
+        }
     }
 
     // email
@@ -113,20 +102,21 @@ const Dashboard = () => {
     // state
 
     return (
-        <div className="min-h-screen bg-base-200 pt-20 mx-2">
+        <div className="min-h-screen bg-base-200 pt-20 px-2">
+
+            {/* Headlines */}
             <div className="flex items-center justify-between mb-6">
                 <h2 className="font-bold text-3xl text-neutral">Tasks</h2>
+
                 <button onClick={() => document.getElementById('addTaskModal').showModal()} className="btn btn-neutral">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-
                     Add Task</button>
             </div>
 
+            {/* Tasks */}
             <section className="grid  grid-cols-1 lg:grid-cols-3 gap-6 my-6">
-
-
                 {
                     states.map(state => {
                         return (
@@ -169,14 +159,10 @@ const Dashboard = () => {
                         )
                     })
                 }
-
-
-
-
             </section>
 
-
-            <dialog id="addTaskModal" className="modal">
+            {/* Add new Task Modal */}
+            <dialog key={1} id="addTaskModal" className="modal">
                 <div className="modal-box">
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -231,61 +217,17 @@ const Dashboard = () => {
                 </div>
             </dialog>
 
-
-            {/* <dialog id="updateTaskModal" className="modal">
+            {/* Update Task Modal */}
+            <dialog key={2} id="updateTaskModal" className="modal">
                 <div className="modal-box">
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <form onSubmit={() => handleSubmit(handleUpdateSubmit)} className="card-body p-0">
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Title</span>
-                            </label>
-                            <input defaultValue={updateTask?.title} {...register("title")} type="text" placeholder="Task Title" className="input input-bordered" required />
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Priority</span>
-                                </label>
-                                <select defaultValue={updateTask?.priority} {...register("priority")} className="select select-bordered w-full max-w-xs">
-                                    <option selected>Low</option>
-                                    <option>Moderate</option>
-                                    <option>High</option>
-                                </select>
-                            </div>
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Deadline</span>
-                                </label>
-                                <input {...register("deadline")} type="text" placeholder="Date" className="input input-bordered" required />
-                            </div>
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">State</span>
-                                </label>
-                                <select defaultValue={updateTask?.state} {...register("state")} className="select select-bordered w-full max-w-xs">
-                                    <option selected>To Do</option>
-                                    <option>Ongoing</option>
-                                    <option>Completed</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Details</span>
-                            </label>
-                            <textarea defaultValue={updateTask?.details} {...register("details", { required: true })} placeholder="Task Details" rows='5' className="textarea textarea-bordered textarea-md w-full" required></textarea>
-                            {errors.exampleRequired && <span className="text-rose-500 mt-2">This field is required</span>}
-                        </div>
-                        <div className="form-control mt-6">
-                            <button className="btn btn-neutral">Update</button>
-                        </div>
-                    </form>
+
+                    <UpdateForm updateTask={updateTask} refetchTasks={refetchTasks} />
 
                 </div>
-            </dialog> */}
+            </dialog>
 
         </div>
     );

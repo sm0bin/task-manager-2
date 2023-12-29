@@ -17,7 +17,7 @@ const Task = ({ task, refetchTasks, setUpdateTask, handleUpdateTask }) => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-                axiosSecure.delete(`/todos/${_id}`)
+                axiosSecure.delete(`/tasks/${_id}`)
                     .then(res => {
                         console.log(res.data);
                         toast.success('Task Deleted!');
@@ -33,7 +33,7 @@ const Task = ({ task, refetchTasks, setUpdateTask, handleUpdateTask }) => {
 
     const updateTask = () => {
         // try {
-        //     const res = await axiosSecure.put(`/todos/${_id}`, { ...task, state: !state });
+        //     const res = await axiosSecure.put(`/tasks/${_id}`, { ...task, state: !state });
         //     if (res.status === 200) {
         //         toast.success('Task Updated!');
         //         refetchTasks();
