@@ -12,6 +12,7 @@ import { useState } from "react";
 
 const Dashboard = () => {
     const { user } = useAuth();
+    const [updateTask, setUpdateTask] = useState({});
     const axiosSecure = useAxiosSecure();
     const [tasks, isPendingTasks, refetchTasks] = useLoadDataSecure(`/tasks/${user.email}`, "tasks");
 
@@ -25,8 +26,9 @@ const Dashboard = () => {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = (data) => {
 
+
+    const onSubmit = (data) => {
         const task = {
             ...data,
             email: user.email
@@ -47,6 +49,16 @@ const Dashboard = () => {
             })
 
     }
+
+    const handleUpdateTask = (task) => {
+        console.log(task);
+        setUpdateTask(task);
+        console.log(updateTask);
+        if (updateTask) {
+            document.getElementById('updateTaskModal').showModal();
+        }
+    }
+
 
     // email
     // title
@@ -74,7 +86,7 @@ const Dashboard = () => {
                 {
                     states.map(state => {
                         return (
-                            <Section key={state} state={state} tasks={tasks} refetchTasks={refetchTasks} />
+                            <Section key={state} state={state} tasks={tasks} refetchTasks={refetchTasks} handleUpdateTask={handleUpdateTask} />
                         )
                     })
                 }
@@ -142,7 +154,7 @@ const Dashboard = () => {
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <UpdateForm refetchTasks={refetchTasks} />
+                    <UpdateForm refetchTasks={refetchTasks} updateTask={updateTask} />
                 </div>
             </dialog>
 
@@ -153,25 +165,28 @@ const Dashboard = () => {
 
 
 
-const Section = ({ state, tasks, refetchTasks }) => {
+const Section = ({ state, tasks, refetchTasks, handleUpdateTask }) => {
     const axiosSecure = useAxiosSecure();
 
-    const addItemToSection = (id) => {
-        console.log('drop', id);
+    const addItemToSection = (item) => {
+        // console.log('drop', id);
 
-        axiosSecure.put(`/tasks/${id}`, { state })
-            .then(res => {
-                console.log(res.data);
-                toast.success('Task Status Updated!');
-                refetchTasks();
-            }).catch(err => {
-                console.log(err);
-            })
+        if (item.state !== state) {
+            axiosSecure.put(`/tasks/${item.id}`, { ...item, state: state })
+                .then(res => {
+                    console.log(res.data);
+                    toast.success('Task Updated!');
+                    refetchTasks();
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        }
     }
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: 'task',
-        drop: (item) => addItemToSection(item.id),
+        drop: (item) => addItemToSection(item),
         collect: (monitor) => ({
             isOver: !!monitor.isOver()
         })
@@ -189,7 +204,7 @@ const Section = ({ state, tasks, refetchTasks }) => {
                     tasks?.map(task => {
                         if (task.state === state) {
                             return (
-                                <Task key={task._id} task={task} refetchTasks={refetchTasks} />
+                                <Task key={task._id} task={task} refetchTasks={refetchTasks} handleUpdateTask={handleUpdateTask} />
                             )
                         }
                     })
@@ -200,9 +215,9 @@ const Section = ({ state, tasks, refetchTasks }) => {
 }
 
 
-const Task = ({ task, refetchTasks }) => {
+const Task = ({ task, refetchTasks, handleUpdateTask }) => {
     const axiosSecure = useAxiosSecure();
-    const [updateTask, setUpdateTask] = useState({});
+
 
     const deleteTask = (_id) => {
         Swal.fire({
@@ -229,25 +244,18 @@ const Task = ({ task, refetchTasks }) => {
 
     }
 
-    const handleUpdateTask = (task) => {
-        console.log(task);
-        setUpdateTask(task);
-        console.log(updateTask);
-        if (updateTask) {
-            document.getElementById('updateTaskModal').showModal();
-        }
-    }
+
 
     const [{ isDragging }, drag] = useDrag(() => ({
         type: 'task',
-        item: { id: task?._id },
+        item: { id: task?._id, state: task?.state },
         collect: (monitor) => ({
             isDragging: !!monitor.isDragging()
         })
     }))
 
     return (
-        <div ref={drag} key={task?._id} className={` ${isDragging ? '-rotate-2 cursor-grabbing' : ''} cursor-grab bg-gray-50 rounded-md overflow-hidden group`}>
+        <div ref={drag} key={task?._id} className={` ${isDragging ? 'opacity-30 cursor-grabbing' : ''} cursor-grab bg-gray-50 rounded-md overflow-hidden group`}>
 
             <div className="bg-neutral px-4 py-3 flex items-center justify-between gap-6">
                 <h4 className="font-semibold text-gray-50 text-lg">{task?.title}</h4>
