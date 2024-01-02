@@ -162,7 +162,7 @@ const Section = ({ state, tasks, refetchTasks }) => {
         axiosSecure.put(`/tasks/${id}`, { state })
             .then(res => {
                 console.log(res.data);
-                toast.success('Task Updated!');
+                toast.success('Task Status Updated!');
                 refetchTasks();
             }).catch(err => {
                 console.log(err);
