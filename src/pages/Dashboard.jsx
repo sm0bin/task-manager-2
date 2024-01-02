@@ -1,5 +1,4 @@
 // import Task from "../components/dashboard/Task";
-import { useForm } from "react-hook-form";
 import useAuth from "../hooks/useAuth";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import { toast } from "react-hot-toast";
@@ -8,47 +7,16 @@ import Swal from "sweetalert2";
 import UpdateForm from "../components/dashboard/UpdateForm";
 import { useDrag, useDrop } from "react-dnd";
 import { useState } from "react";
-// import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import AddTaskForm from "../components/dashboard/AddTaskForm";
+
+
 
 const Dashboard = () => {
     const { user } = useAuth();
     const [updateTask, setUpdateTask] = useState({});
-    const axiosSecure = useAxiosSecure();
     const [tasks, isPendingTasks, refetchTasks] = useLoadDataSecure(`/tasks/${user.email}`, "tasks");
-
     const states = ["To Do", "Ongoing", "Completed"];
 
-    const {
-        register,
-        handleSubmit,
-        // watch,
-        reset,
-        formState: { errors },
-    } = useForm();
-
-
-
-    const onSubmit = (data) => {
-        const task = {
-            ...data,
-            email: user.email
-        }
-        console.log(task);
-
-        axiosSecure.post("/tasks", task)
-            .then(res => {
-                console.log(res.data);
-                toast.success('Task Added!');
-                reset();
-                refetchTasks();
-                document.getElementById('addTaskModal').close();
-            })
-            .catch(err => {
-                console.log(err);
-                toast.error(err.message);
-            })
-
-    }
 
     const handleUpdateTask = (task) => {
         console.log(task);
@@ -58,14 +26,6 @@ const Dashboard = () => {
             document.getElementById('updateTaskModal').showModal();
         }
     }
-
-
-    // email
-    // title
-    // details
-    // deadline
-    // priority
-    // state
 
     return (
         <div className="min-h-screen bg-base-200 pt-20 px-2">
@@ -98,52 +58,8 @@ const Dashboard = () => {
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <form onSubmit={handleSubmit(onSubmit)} className="card-body p-0">
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Title</span>
-                            </label>
-                            <input {...register("title")} type="text" placeholder="Task Title" className="input input-bordered" required />
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Priority</span>
-                                </label>
-                                <select {...register("priority")} className="select select-bordered w-full max-w-xs">
-                                    <option selected>Low</option>
-                                    <option>Moderate</option>
-                                    <option>High</option>
-                                </select>
-                            </div>
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Deadline</span>
-                                </label>
-                                <input {...register("deadline")} type="text" placeholder="Date" className="input input-bordered" required />
-                            </div>
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">State</span>
-                                </label>
-                                <select {...register("state")} className="select select-bordered w-full max-w-xs">
-                                    <option selected>To Do</option>
-                                    <option>Ongoing</option>
-                                    <option>Completed</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Details</span>
-                            </label>
-                            <textarea {...register("details", { required: true })} placeholder="Task Details" rows='5' className="textarea textarea-bordered textarea-md w-full" required></textarea>
-                            {errors.exampleRequired && <span className="text-rose-500 mt-2">This field is required</span>}
-                        </div>
-                        <div className="form-control mt-6">
-                            <button className="btn btn-neutral">Add</button>
-                        </div>
-                    </form>
+
+                    <AddTaskForm refetchTasks={refetchTasks} />
 
                 </div>
             </dialog>
@@ -161,7 +77,6 @@ const Dashboard = () => {
         </div>
     );
 };
-
 
 
 
@@ -284,3 +199,10 @@ const Task = ({ task, refetchTasks, handleUpdateTask }) => {
 }
 
 export default Dashboard;
+
+// email
+// title
+// details
+// deadline
+// priority
+// state
