@@ -34,7 +34,8 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-200 pt-20 px-2">
+        <div className="h-screen overflow-y-auto bg-slate-50 pt-20 px-2">
+            {/* <div className="overflow-y-auto"> */}
 
             {/* Headlines */}
             <div className="flex items-center justify-between mb-6">
@@ -81,6 +82,7 @@ const Dashboard = () => {
             </dialog>
 
         </div>
+        // </div >
     );
 };
 
@@ -115,12 +117,12 @@ const Section = ({ state, tasks, refetchTasks, handleUpdateTask }) => {
 
 
     return (
-        <div className="flex flex-col">
+        <section className="flex flex-col">
             <div className="bg-neutral text-center p-4 rounded-t-lg text-white">
                 <h3 className="font-bold text-xl">{state}</h3>
             </div>
 
-            <div ref={drop} className={`p-4 space-y-4 grow bg-base-300 rounded-b-lg ${isOver ? 'border border-dashed border-slate-700' : ''}`}>
+            <div ref={drop} className={`p-4 space-y-4 grow bg-slate-100 rounded-b-lg ${isOver ? 'border border-dashed border-slate-700' : ''}`}>
                 {
                     tasks?.map(task => {
                         if (task.state === state) {
@@ -131,7 +133,7 @@ const Section = ({ state, tasks, refetchTasks, handleUpdateTask }) => {
                     })
                 }
             </div>
-        </div>
+        </section>
     )
 }
 
@@ -178,8 +180,8 @@ const Task = ({ task, refetchTasks, handleUpdateTask }) => {
     return (
         <div ref={drag} key={task?._id} className={` ${isDragging ? 'opacity-30 cursor-grabbing' : ''} cursor-grab bg-gray-50 rounded-md overflow-hidden group`}>
 
-            <div className="bg-neutral px-4 py-3 flex items-center justify-between gap-6">
-                <h4 className="font-semibold text-gray-50 text-lg">{task?.title}</h4>
+            <div className="bg-slate-200 px-4 py-2 flex items-center justify-between gap-6">
+                <h4 className="font-semibold text-gray-600 text-lg">{task?.title}</h4>
 
                 <div className="flex">
                     <button onClick={() => deleteTask(task._id)} className="btn btn-ghost btn-circle text-transparent group-hover:text-rose-400">
