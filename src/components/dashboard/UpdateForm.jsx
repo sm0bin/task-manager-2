@@ -4,8 +4,7 @@ import { toast } from "react-hot-toast";
 import { forwardRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-// import { setHours, setMinutes } from "date-fns";
-
+import { setHours, setMinutes } from "date-fns";
 
 const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
     return (
@@ -18,13 +17,15 @@ const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
 ExampleCustomInput.displayName = 'ExampleCustomInput';
 
 
-const UpdateForm = ({ updateTask, refetchTasks, updateTaskDate, setUpdateTaskDate }) => {
+const UpdateForm = ({ updateTask, refetchTasks }) => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
     const states = ["To Do", "Ongoing", "Completed"];
     const priorities = ["Low", "Moderate", "High"];
     // const [startDate, setStartDate] = useState(updateTask?.deadline);
-
+    const [startDate, setStartDate] = useState(
+        setHours(setMinutes(new Date(updateTask?.deadline), 30), 16),
+    );
 
 
 
@@ -33,7 +34,7 @@ const UpdateForm = ({ updateTask, refetchTasks, updateTaskDate, setUpdateTaskDat
         const task = {
             title: e.target.title.value,
             priority: e.target.priority.value,
-            deadline: updateTaskDate,
+            deadline: startDate,
             state: e.target.state.value,
             details: e.target.details.value,
             email: user.email
@@ -82,8 +83,8 @@ const UpdateForm = ({ updateTask, refetchTasks, updateTaskDate, setUpdateTaskDat
 
                     <DatePicker
                         customInput={<ExampleCustomInput />}
-                        selected={updateTaskDate}
-                        onChange={(date) => setUpdateTaskDate(date)}
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
                         // locale="pt-BR"
                         showTimeSelect
                         timeFormat="p"
