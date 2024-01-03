@@ -8,6 +8,8 @@ import UpdateForm from "../components/dashboard/UpdateForm";
 import { useDrag, useDrop } from "react-dnd";
 import { useState } from "react";
 import AddTaskForm from "../components/dashboard/AddTaskForm";
+import { setHours, setMinutes } from "date-fns";
+// import { set } from "react-hook-form";
 
 
 
@@ -16,10 +18,14 @@ const Dashboard = () => {
     const [updateTask, setUpdateTask] = useState({});
     const [tasks, isPendingTasks, refetchTasks] = useLoadDataSecure(`/tasks/${user.email}`, "tasks");
     const states = ["To Do", "Ongoing", "Completed"];
-
+    const [startDate, setStartDate] = useState(
+        setHours(setMinutes(new Date(), 30), 16),
+    );
 
     const handleUpdateTask = (task) => {
         console.log(task);
+        setStartDate(new Date(task.deadline));
+        task.deadline = startDate;
         setUpdateTask(task);
         console.log(updateTask);
         if (updateTask) {
@@ -70,7 +76,7 @@ const Dashboard = () => {
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <UpdateForm refetchTasks={refetchTasks} updateTask={updateTask} />
+                    <UpdateForm refetchTasks={refetchTasks} updateTask={updateTask} startDate={startDate} setStartDate={setStartDate} />
                 </div>
             </dialog>
 

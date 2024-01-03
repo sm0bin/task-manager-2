@@ -4,28 +4,28 @@ import { toast } from "react-hot-toast";
 import { forwardRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { setHours, setMinutes } from "date-fns";
-
-const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
-    return (
-        <button className="input input-bordered w-full" onClick={onClick} ref={ref}>
-            {value}
-        </button>
-    )
-});
-
-ExampleCustomInput.displayName = 'ExampleCustomInput';
 
 
-const UpdateForm = ({ updateTask, refetchTasks }) => {
+
+const UpdateForm = ({ updateTask, refetchTasks, startDate, setStartDate }) => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
     const states = ["To Do", "Ongoing", "Completed"];
     const priorities = ["Low", "Moderate", "High"];
     // const [startDate, setStartDate] = useState(updateTask?.deadline);
-    const [startDate, setStartDate] = useState(
-        setHours(setMinutes(new Date(updateTask?.deadline), 30), 16),
-    );
+    // const [startDate, setStartDate] = useState(
+    //     setHours(setMinutes(new Date(updateTask?.deadline), 30), 16),
+    // );
+    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+        return (
+            <button type="button" className="input input-bordered w-full" onClick={onClick} ref={ref}>
+                {value}
+            </button>
+        )
+    });
+
+    ExampleCustomInput.displayName = 'ExampleCustomInput';
+    console.log(updateTask);
 
 
 

@@ -5,11 +5,11 @@ import useAuth from "../../hooks/useAuth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { forwardRef, useState } from "react";
-import { setHours, setMinutes } from "date-fns";
+
 
 const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
     return (
-        <button className="input input-bordered w-full" onClick={onClick} ref={ref}>
+        <button type="button" className="input input-bordered w-full" onClick={onClick} ref={ref}>
             {value}
         </button>
     )
@@ -17,15 +17,14 @@ const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
 
 ExampleCustomInput.displayName = 'ExampleCustomInput';
 
-
-
 const AddTaskForm = ({ refetchTasks }) => {
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
     // const [startDate, setStartDate] = useState(new Date());
     const [startDate, setStartDate] = useState(
-        setHours(setMinutes(new Date(), 30), 16),
+        new Date(),
     );
+
 
     const {
         register,
