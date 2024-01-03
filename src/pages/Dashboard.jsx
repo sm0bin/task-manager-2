@@ -37,16 +37,12 @@ const Dashboard = () => {
         <div className="h-screen overflow-y-auto bg-slate-50 pt-20 pb-8 px-4">
             {/* <div className="overflow-y-auto"> */}
 
-            {/* Headlines */}
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="font-bold text-3xl text-neutral">Tasks</h2>
-
-                <button onClick={() => document.getElementById('addTaskModal').showModal()} className="btn btn-neutral">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    Add Task</button>
-            </div>
+            {/* Add button */}
+            <button onClick={() => document.getElementById('addTaskModal').showModal()} className="fixed bottom-12 right-12 btn btn-circle btn-lg btn-neutral ">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-8 h-8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+            </button>
 
             {/* Tasks Section */}
             <section className="grid  grid-cols-1 lg:grid-cols-3 gap-4 my-4">
