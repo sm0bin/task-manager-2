@@ -1,14 +1,31 @@
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import { toast } from "react-hot-toast";
+import { forwardRef, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+// import { setHours, setMinutes } from "date-fns";
 
 
+const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+    return (
+        <button className="input input-bordered w-full" onClick={onClick} ref={ref}>
+            {value}
+        </button>
+    )
+});
 
-const UpdateForm = ({ updateTask, refetchTasks }) => {
+ExampleCustomInput.displayName = 'ExampleCustomInput';
+
+
+const UpdateForm = ({ updateTask, refetchTasks, updateTaskDate, setUpdateTaskDate }) => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
     const states = ["To Do", "Ongoing", "Completed"];
     const priorities = ["Low", "Moderate", "High"];
+    // const [startDate, setStartDate] = useState(updateTask?.deadline);
+
+
 
 
     const handleSubmit = (e) => {
@@ -16,7 +33,7 @@ const UpdateForm = ({ updateTask, refetchTasks }) => {
         const task = {
             title: e.target.title.value,
             priority: e.target.priority.value,
-            deadline: e.target.deadline.value,
+            deadline: updateTaskDate,
             state: e.target.state.value,
             details: e.target.details.value,
             email: user.email
@@ -59,7 +76,22 @@ const UpdateForm = ({ updateTask, refetchTasks }) => {
                     <label className="label">
                         <span className="label-text">Deadline</span>
                     </label>
-                    <input name="deadline" defaultValue={updateTask?.deadline} type="text" placeholder="Date" className="input input-bordered" />
+                    {/* <DatePicker
+                        customInput={<ExampleCustomInput />}
+                        selected={startDate} onChange={(date) => setStartDate(date)} /> */}
+
+                    <DatePicker
+                        customInput={<ExampleCustomInput />}
+                        selected={updateTaskDate}
+                        onChange={(date) => setUpdateTaskDate(date)}
+                        // locale="pt-BR"
+                        showTimeSelect
+                        timeFormat="p"
+                        timeIntervals={15}
+                        // dateFormat="Pp"
+                        dateFormat="dd/MM/yyyy hh:mm a"
+                    />
+                    {/* <input name="deadline" defaultValue={updateTask?.deadline} type="text" placeholder="Date" className="input input-bordered" /> */}
                 </div>
                 <div className="form-control">
                     <label className="label">

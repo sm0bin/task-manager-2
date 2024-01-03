@@ -5,11 +5,27 @@ import useAuth from "../../hooks/useAuth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { forwardRef, useState } from "react";
+import { setHours, setMinutes } from "date-fns";
+
+const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+    return (
+        <button className="input input-bordered w-full" onClick={onClick} ref={ref}>
+            {value}
+        </button>
+    )
+});
+
+ExampleCustomInput.displayName = 'ExampleCustomInput';
+
+
 
 const AddTaskForm = ({ refetchTasks }) => {
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
-    const [startDate, setStartDate] = useState(new Date());
+    // const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(
+        setHours(setMinutes(new Date(), 30), 16),
+    );
 
     const {
         register,
@@ -19,11 +35,6 @@ const AddTaskForm = ({ refetchTasks }) => {
         formState: { errors },
     } = useForm();
 
-    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-        <button className="input input-bordered" onClick={onClick} ref={ref}>
-            {value}
-        </button>
-    ));
 
 
     const onSubmit = (data) => {
@@ -72,7 +83,18 @@ const AddTaskForm = ({ refetchTasks }) => {
                     <label className="label">
                         <span className="label-text">Deadline</span>
                     </label>
-                    <DatePicker customInput={<ExampleCustomInput />}  {...register("deadline")} required selected={startDate} onChange={(date) => setStartDate(date)} />
+                    <DatePicker
+                        customInput={<ExampleCustomInput />}
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        // locale="pt-BR"
+                        showTimeSelect
+                        timeFormat="p"
+                        timeIntervals={15}
+                        // dateFormat="Pp"
+                        dateFormat="dd/MM/yyyy hh:mm a"
+                    />
+                    {/* <DatePicker customInput={<ExampleCustomInput />}  {...register("deadline")} required selected={startDate} onChange={(date) => setStartDate(date)} /> */}
                     {/* <input {...register("deadline")} type="text" placeholder="Date" className="input input-bordered" required /> */}
                 </div>
                 <div className="form-control">
