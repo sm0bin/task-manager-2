@@ -34,7 +34,7 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="h-screen overflow-y-auto bg-slate-50 pt-20 px-2">
+        <div className="h-screen overflow-y-auto bg-slate-50 pt-20 pb-8 px-4">
             {/* <div className="overflow-y-auto"> */}
 
             {/* Headlines */}
@@ -178,10 +178,10 @@ const Task = ({ task, refetchTasks, handleUpdateTask }) => {
     }))
 
     return (
-        <div ref={drag} key={task?._id} className={` ${isDragging ? 'opacity-30 cursor-grabbing' : ''} cursor-grab bg-gray-50 rounded-md overflow-hidden group`}>
+        <div ref={drag} key={task?._id} className={`border ${isDragging ? 'opacity-30 cursor-grabbing' : ''} cursor-grab bg-gray-50 rounded-md overflow-hidden group`}>
 
-            <div className="bg-slate-200 px-4 py-2 flex items-center justify-between gap-6">
-                <h4 className="font-semibold text-gray-600 text-lg">{task?.title}</h4>
+            <div className="border-b px-4 py-2 flex items-center justify-between gap-6">
+                <h4 className="font-semibold text-gray-600 text-xl">{task?.title}</h4>
 
                 <div className="flex">
                     <button onClick={() => deleteTask(task._id)} className="btn btn-ghost btn-circle text-transparent group-hover:text-rose-400">
@@ -199,7 +199,7 @@ const Task = ({ task, refetchTasks, handleUpdateTask }) => {
                 </div>
             </div>
 
-            <div className="p-4">
+            <div className="p-4 text-gray-500">
                 {task?.details}
             </div>
         </div>
